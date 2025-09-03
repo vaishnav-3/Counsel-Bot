@@ -1,14 +1,14 @@
+import { chatSessions, messages } from "@/db/schema";
+import { and, eq, asc } from "drizzle-orm";
 import { z } from "zod";
-import { eq, asc } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "..";
-import { messages } from "@/db/schema";
 import { getAIResponse } from "@/lib/gemini";
 
 export const chatRouter = createTRPCRouter({
   sendMessage: protectedProcedure
     .input(
       z.object({
-        sessionId: z.string().uuid("Invalid session ID format"),
+        sessionId: z.uuid("Invalid session ID format"),
         message: z
           .string()
           .min(1, "Message cannot be empty")
@@ -16,60 +16,66 @@ export const chatRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-
       const { sessionId, message } = input;
       const userId = ctx.session.user?.id;
-
-      if (!userId) {
-        throw new Error("User not authenticated");
-      }
+      if (!userId) throw new Error("User not authenticated");
 
       try {
-
-        // Step 1: Save user message to database with role "user"
-        const userMessageData = {
-          sessionId,
-          sender: "user" as const,
-          content: message,
-        };
-
+        // 1️⃣ Save user message
         const [userMessage] = await ctx.db
           .insert(messages)
-          .values(userMessageData)
+          .values({ sessionId, sender: "user", content: message })
           .returning();
 
-        // Step 2: Get session history and call AI
+        // 2️⃣ Check if session still has default title
+        const [session] = await ctx.db
+          .select()
+          .from(chatSessions)
+          .where(and(eq(chatSessions.id, sessionId), eq(chatSessions.userId, userId)));
 
-        const aiResponseContent = await getAIResponse(
-          message,
-          sessionId,
-          ctx.db
-        );
+        if (session && session.title === "New Chat") {
+          try {
+            // Ask Gemini for a short, descriptive title
+            const generatedTitle = await getAIResponse(
+              `Generate a very short title (max 5 words) for this conversation based on the message: "${message}". 
+              Just output the title, no extra text.`,
+              sessionId,
+              ctx.db
+            );
 
-        // Step 3: Save AI response to database with role "assistant"
+            // Update session with Gemini-generated title
+            await ctx.db
+              .update(chatSessions)
+              .set({ title: generatedTitle })
+              .where(eq(chatSessions.id, sessionId));
+          } catch (err) {
+            console.error("Failed to generate title:", err);
+            // fallback: truncate message
+            const fallbackTitle =
+              message.length > 40 ? message.slice(0, 40) + "..." : message;
+            await ctx.db
+              .update(chatSessions)
+              .set({ title: fallbackTitle })
+              .where(eq(chatSessions.id, sessionId));
+          }
+        }
 
-        const aiMessageData = {
-          sessionId,
-          sender: "ai" as const,
-          content: aiResponseContent,
-        };
+        // 3️⃣ Get AI response for conversation
+        const aiResponseContent = await getAIResponse(message, sessionId, ctx.db);
 
+        // 4️⃣ Save AI response
         const [aiMessage] = await ctx.db
           .insert(messages)
-          .values(aiMessageData)
+          .values({ sessionId, sender: "ai", content: aiResponseContent })
           .returning();
 
-        // Step 4: Return both messages
-        return {
-          userMessage,
-          aiMessage,
-          success: true,
-        };
+        return { userMessage, aiMessage, success: true };
       } catch (error) {
         console.error("Error in sendMessage:", error);
         throw new Error("Failed to send message and get AI response");
       }
     }),
+
 
   getMessages: protectedProcedure
     .input(
