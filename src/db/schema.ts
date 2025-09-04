@@ -16,7 +16,7 @@ export const chatSessions = pgTable("chat_sessions", {
 
 export const messages = pgTable("messages", {
   id: uuid("id").primaryKey().defaultRandom(),
-  sessionId: uuid("session_id").notNull().references(() => chatSessions.id),
+  sessionId: uuid("session_id").notNull().references(() => chatSessions.id, { onDelete: "cascade"}),
   sender: varchar("sender", { length: 50 }).notNull(), // "user" | "ai"
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

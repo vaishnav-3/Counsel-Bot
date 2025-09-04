@@ -27,7 +27,20 @@ export const chatRouter = createTRPCRouter({
           .values({ sessionId, sender: "user", content: message })
           .returning();
 
-        // 2️⃣ Check if session still has default title
+        // 2️⃣ Get AI response (returns { title, response })
+        const aiResponse = await getAIResponse(message, sessionId, ctx.db);
+
+        // 3️⃣ Save AI response content only (not the JSON)
+        const [aiMessage] = await ctx.db
+          .insert(messages)
+          .values({ 
+            sessionId, 
+            sender: "assistant", // Changed from "ai" to "assistant" to match your frontend
+            content: aiResponse.response // Only save the markdown response
+          })
+          .returning();
+
+        // 4️⃣ Update session title if it's still the default
         const [session] = await ctx.db
           .select()
           .from(chatSessions)
@@ -35,39 +48,27 @@ export const chatRouter = createTRPCRouter({
 
         if (session && session.title === "New Chat") {
           try {
-            // Ask Gemini for a short, descriptive title
-            const generatedTitle = await getAIResponse(
-              `Generate a very short title (max 5 words) for this conversation based on the message: "${message}". 
-              Just output the title, no extra text.`,
-              sessionId,
-              ctx.db
-            );
-
-            // Update session with Gemini-generated title
+            // Use the AI-generated title
             await ctx.db
               .update(chatSessions)
-              .set({ title: generatedTitle })
+              .set({ 
+                title: aiResponse.title,
+                updatedAt: new Date() // Update the session timestamp
+              })
               .where(eq(chatSessions.id, sessionId));
           } catch (err) {
-            console.error("Failed to generate title:", err);
-            // fallback: truncate message
-            const fallbackTitle =
-              message.length > 40 ? message.slice(0, 40) + "..." : message;
+            console.error("Failed to update session title:", err);
+            // Fallback: use truncated message
+            const fallbackTitle = message.length > 40 ? message.slice(0, 40) + "..." : message;
             await ctx.db
               .update(chatSessions)
-              .set({ title: fallbackTitle })
+              .set({ 
+                title: fallbackTitle,
+                updatedAt: new Date()
+              })
               .where(eq(chatSessions.id, sessionId));
           }
         }
-
-        // 3️⃣ Get AI response for conversation
-        const aiResponseContent = await getAIResponse(message, sessionId, ctx.db);
-
-        // 4️⃣ Save AI response
-        const [aiMessage] = await ctx.db
-          .insert(messages)
-          .values({ sessionId, sender: "ai", content: aiResponseContent })
-          .returning();
 
         return { userMessage, aiMessage, success: true };
       } catch (error) {
@@ -76,7 +77,6 @@ export const chatRouter = createTRPCRouter({
       }
     }),
 
-
   getMessages: protectedProcedure
     .input(
       z.object({
@@ -84,7 +84,6 @@ export const chatRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-
       const { sessionId } = input;
       const userId = ctx.session.user?.id;
 
@@ -93,8 +92,21 @@ export const chatRouter = createTRPCRouter({
       }
 
       try {
+        // Verify user owns this session
+        const session = await ctx.db
+          .select()
+          .from(chatSessions)
+          .where(and(
+            eq(chatSessions.id, sessionId),
+            eq(chatSessions.userId, userId)
+          ))
+          .limit(1);
+
+        if (!session.length) {
+          throw new Error("Session not found or access denied");
+        }
+
         // Get all messages for the session, ordered by creation time
-        
         const sessionMessages = await ctx.db
           .select()
           .from(messages)
@@ -121,7 +133,6 @@ export const chatRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      
       const { sessionId, limit, offset } = input;
       const userId = ctx.session.user?.id;
 
@@ -130,7 +141,20 @@ export const chatRouter = createTRPCRouter({
       }
 
       try {
-        
+        // Verify user owns this session
+        const session = await ctx.db
+          .select()
+          .from(chatSessions)
+          .where(and(
+            eq(chatSessions.id, sessionId),
+            eq(chatSessions.userId, userId)
+          ))
+          .limit(1);
+
+        if (!session.length) {
+          throw new Error("Session not found or access denied");
+        }
+
         const sessionMessages = await ctx.db
           .select()
           .from(messages)

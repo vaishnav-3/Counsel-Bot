@@ -1,6 +1,5 @@
-import { GalleryVerticalEnd } from "lucide-react"
 
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/components/signin-form"
 import Image from "next/image"
 import { BotMessageSquare } from 'lucide-react';
 
