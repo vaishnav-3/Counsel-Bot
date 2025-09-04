@@ -19,13 +19,9 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
-import { api } from "@/trpc/react"; // ✅ Import your TRPC hooks
+
+import { api } from "@/trpc/react"; // Import your TRPC hooks
 import { useRouter } from "next/navigation";
 import { useChat } from "./chat-context";
 
@@ -35,10 +31,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { setSelectedChatName } = useChat();
   const router = useRouter();
 
-  // ✅ Fetch sessions from DB
+  //  Fetch sessions from DB
   const { data: sessions,isLoading, refetch  } = api.session.getSessions.useQuery();
 
-  // ✅ Mutation for creating new session
+  // Mutation for creating new session
   const createSession = api.session.createSession.useMutation({
     onSuccess: (data) => {
       // after creating, navigate to the new chat page
@@ -48,12 +44,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
   });
 
-  // ✅ Handler
+  // Handler
   const handleNewChat = async () => {
     await createSession.mutateAsync({});
   };
 
-  // ✅ Filtered chats
+  // Filtered chats
   const filteredChats = sessions?.sessions?.filter((c) =>
     c.title.toLowerCase().includes(search.toLowerCase())
   );
@@ -62,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <TooltipProvider>
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
-          <TeamSwitcher teams={[{ name: "Acme Inc", logo: Bot, plan: "Pro" }]} />
+          <TeamSwitcher/>
 
           <SidebarMenu>
             <SidebarMenuItem>
@@ -113,13 +109,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarContent>
 
         <SidebarFooter>
-          <NavUser
-            user={{
-              name: "shadcn",
-              email: "m@example.com",
-              avatar: "/avatars/shadcn.jpg",
-            }}
-          />
+          <NavUser/>
         </SidebarFooter>
 
         <SidebarRail />

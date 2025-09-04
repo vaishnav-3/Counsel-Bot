@@ -1,12 +1,12 @@
 import { api } from "@/trpc/react"
 import { signOut } from "next-auth/react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { ChevronsUpDown, LogOut } from "lucide-react"
 
 export function NavUser() {
-  const { data, isLoading } = api.session.getUser.useQuery()
+  const { data } = api.session.getUser.useQuery()
   const { isMobile } = useSidebar()
 
   if (!data?.user) return null
