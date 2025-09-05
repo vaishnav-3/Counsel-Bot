@@ -1,23 +1,20 @@
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { getServerSession } from "next-auth/next";
+import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/db";
 
 /**
- * Creates context for tRPC
- * This is used to pass common dependencies to all tRPC procedures
+ * Context for tRPC (App Router + fetch adapter)
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
-
-  // Get the session from NextAuth
-  const session = await getServerSession(req, res, authOptions);
+export const createTRPCContext = async (opts: FetchCreateContextFnOptions) => {
+  // you only get req, resHeaders, info
+  const session = await getServerSession(authOptions);
 
   return {
     db,
     session,
-    req,
-    res,
+    req: opts.req,
+    resHeaders: opts.resHeaders,
   };
 };
 

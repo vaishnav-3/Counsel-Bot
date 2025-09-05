@@ -1,40 +1,21 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { type NextRequest } from "next/server";
-
 import { appRouter } from "@/server/trpc/root";
 import { createTRPCContext } from "@/server/trpc/context";
 
-// creates a function that processes incoming HTTP requests and routes them to tRPC procedures.
-const handler = (req: NextRequest) =>  
+// Correct fetch adapter handler
+const handler = (req: NextRequest) =>
   fetchRequestHandler({
     endpoint: "/api/trpc",
-    req,
+    // NextRequest extends the Web Fetch API Request, so casting is safe:
+    req: req as unknown as Request,
     router: appRouter,
-    createContext: () => {
-      const mockRes = {
-        getHeader: () => undefined,
-        setHeader: () => {},
-        removeHeader: () => {},
-        status: () => mockRes,
-        json: () => {},
-        send: () => {},
-        end: () => {},
-        write: () => {},
-        statusCode: 200,
-        statusMessage: "OK",
-      };
-
-      return createTRPCContext({
-        req: req as any,
-        res: mockRes as any,
-        info: {} as any,
-      });
-    },
+    createContext: (opts) => createTRPCContext(opts),
     onError:
       process.env.NODE_ENV === "development"
         ? ({ path, error }) => {
             console.error(
-              `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
+              `tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
             );
           }
         : undefined,

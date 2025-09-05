@@ -5,6 +5,7 @@ import { httpBatchLink } from "@trpc/client";
 import { api } from "./react";
 import { useState } from "react";
 
+
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
@@ -19,7 +20,9 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <api.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
     </api.Provider>
   );
 }

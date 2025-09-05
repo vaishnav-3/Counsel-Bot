@@ -29,7 +29,7 @@ export const chatRouter = createTRPCRouter({
 
         // 2️⃣ Get AI response (returns { title, response })
         const aiResponse = await getAIResponse(message, sessionId, ctx.db);
-
+        
         // 3️⃣ Save AI response content only (not the JSON)
         const [aiMessage] = await ctx.db
           .insert(messages)
@@ -53,7 +53,6 @@ export const chatRouter = createTRPCRouter({
               .update(chatSessions)
               .set({ 
                 title: aiResponse.title,
-                updatedAt: new Date() // Update the session timestamp
               })
               .where(eq(chatSessions.id, sessionId));
           } catch (err) {
@@ -64,7 +63,6 @@ export const chatRouter = createTRPCRouter({
               .update(chatSessions)
               .set({ 
                 title: fallbackTitle,
-                updatedAt: new Date()
               })
               .where(eq(chatSessions.id, sessionId));
           }
