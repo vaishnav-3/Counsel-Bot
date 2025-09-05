@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+#  
 
-## Getting Started
+<!-- Add your project banner image here -->
+![Banner](./public/banner.png)
 
-First, run the development server:
+# AI Counseling Bot 🤖
+
+An AI-powered counseling platform built with **Next.js**, **tRPC**, **TanStack Query**, **NextAuth**, **Drizzle ORM**, **PostgreSQL**, **TailwindCSS**, **ShadcnUI**, and **Gemini API**.
+
+---
+
+## 🚀 Tech Stack
+
+- **Next.js** – Full-stack React framework  
+- **TypeScript** – Type safety for scalability  
+- **tRPC** – End-to-end type-safe APIs  
+- **TanStack Query** – Data fetching & state management  
+- **NextAuth.js** – Authentication & session management  
+- **Drizzle ORM** – Type-safe database queries  
+- **PostgreSQL** – Relational database  
+- **TailwindCSS** – Utility-first CSS framework  
+- **ShadcnUI** – Pre-built UI components  
+- **Gemini API** – AI-powered conversations  
+
+---
+
+## 📂 Project Structure
+
+```bash
+.
+├── drizzle
+│   └── meta
+├── public
+└── src
+    ├── app
+    │   ├── api
+    │   │   ├── auth
+    │   │   │   ├── [...nextauth]
+    │   │   │   └── signup
+    │   │   └── trpc
+    │   │       └── [trpc]
+    │   ├── auth
+    │   │   ├── signin
+    │   │   └── signup
+    │   └── chat
+    │       └── [sessionId]
+    ├── components
+    │   ├── chat
+    │   └── ui
+    ├── db
+    ├── hooks
+    ├── lib
+    ├── server
+    │   └── trpc
+    │       └── routers
+    ├── trpc
+    └── types
+```
+
+---
+
+## ⚡ Features
+
+- 🔐 **Secure Authentication** with NextAuth
+- 📡 **Type-safe API calls** using tRPC
+- 🗄 **Drizzle ORM + PostgreSQL** for database
+- 🎨 **Beautiful UI** with Tailwind + ShadcnUI
+- 🤖 **AI-powered counseling** using Gemini API
+- ⚡ **Optimized data fetching** with TanStack Query
+
+---
+
+## 🛠 Setup & Installation
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/your-username/ai-counseling-bot.git
+cd ai-counseling-bot
+```
+
+2. **Install dependencies:**
+
+```bash
+npm install
+```
+
+3. **Setup environment variables** in `.env`:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+NEXTAUTH_SECRET=your-secret
+NEXTAUTH_URL=http://localhost:3000
+GEMINI_API_KEY=your-gemini-api-key
+```
+
+4. **Run database migrations:**
+
+```bash
+npx drizzle-kit push
+```
+
+5. **Start the development server:**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📸 Screenshots
+1. **Login Page:**
+![screenshot1](./public/screenshots/screenshot1.png)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+2. **ChatUI:**
+![screenshot2](./public/screenshots/screenshot2.png)
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **ChatUI:Darkmode:**
+![screenshot3](./public/screenshots/screenshot3.png)
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🤝 Contributing
 
-## Deploy on Vercel
+Contributions, issues, and feature requests are welcome! Feel free to fork and open a PR.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
