@@ -69,8 +69,8 @@ export function NavChats({
                   onClick={onSelect ? () => onSelect(chat.id) : undefined}
                   className={`flex items-center gap-2 ${
                     isActive
-                      ? "bg-gray-400 text-primary font-medium hover:bg-gray-400"
-                      : ""
+                      ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-medium hover:bg-gray-200 dark:hover:bg-gray-700"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-800"
                   }`}
                 >
                   <Link href={`/chat/${chat.id}`}>
@@ -83,7 +83,7 @@ export function NavChats({
                   onClick={() => deleteSession.mutate({ sessionId: chat.id })}
                   aria-label={`Delete ${chat.title}`}
                   title="Delete chat"
-                  className="hover:bg-red-200"
+                  className="hover:bg-red-300 dark:hover:bg-red-800"
                 >
                   <Trash2 />
                   <span className="sr-only">Delete</span>

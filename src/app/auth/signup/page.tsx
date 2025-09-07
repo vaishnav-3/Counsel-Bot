@@ -1,7 +1,6 @@
-
-import { SignupForm } from "@/components/signup-form";
+import { SignupForm } from "@/app/auth/_components/signup-form";
 import Image from "next/image";
-import { BotMessageSquare } from 'lucide-react';
+import { BotMessageSquare } from "lucide-react";
 
 export default function SignupPage() {
   return (

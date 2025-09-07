@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 
 import { NavUser } from "@/components/nav-user";
 import { NavChats } from "@/components/nav-chats";
-import { TeamSwitcher } from "@/components/team-switcher";
+import { LogoSidebar } from "@/components/logo-sidebar";
 import {
   Sidebar,
   SidebarContent,
@@ -20,7 +20,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-
 import { api } from "@/trpc/react"; // Import your TRPC hooks
 import { useRouter } from "next/navigation";
 import { useChat } from "./chat-context";
@@ -32,7 +31,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
 
   //  Fetch sessions from DB
-  const { data: sessions,isLoading, refetch  } = api.session.getSessions.useQuery();
+  const {
+    data: sessions,
+    isLoading,
+    refetch,
+  } = api.session.getSessions.useQuery();
 
   // Mutation for creating new session
   const createSession = api.session.createSession.useMutation({
@@ -58,7 +61,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <TooltipProvider>
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
-          <TeamSwitcher/>
+          <LogoSidebar />
 
           <SidebarMenu>
             <SidebarMenuItem>
@@ -109,7 +112,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarContent>
 
         <SidebarFooter>
-          <NavUser/>
+          <NavUser />
         </SidebarFooter>
 
         <SidebarRail />
