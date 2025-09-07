@@ -1,15 +1,15 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { SessionProvider } from '@/components/SessionProvider';
-import { TRPCProvider } from '@/trpc/provider';
-import { ThemeProvider } from '@/components/ThemeProvider';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { SessionProvider } from "@/components/provider/SessionProvider";
+import { TRPCProvider } from "@/trpc/provider";
+import { ThemeProvider } from "@/components/provider/ThemeProvider";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'AI Career Counselor',
-  description: 'Get personalized career guidance from AI',
+  title: "AI Career Counselor",
+  description: "Get personalized career guidance from AI",
 };
 
 export default function RootLayout({

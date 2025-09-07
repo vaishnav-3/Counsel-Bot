@@ -1,6 +1,6 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { ChatProvider } from "@/components/chat-context";
+import { ChatProvider } from "@/components/provider/chat-context";
 import { ChatHeaderBar } from "@/components/chat/chat-header";
 
 export default function ChatLayout({

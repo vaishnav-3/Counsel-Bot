@@ -4,9 +4,9 @@ import * as React from "react";
 import { Bot, Plus } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import { NavUser } from "@/components/nav-user";
-import { NavChats } from "@/components/nav-chats";
-import { LogoSidebar } from "@/components/logo-sidebar";
+import { NavUser } from "@/components/layout/nav-user";
+import { NavChats } from "@/components/layout/nav-chats";
+import { LogoSidebar } from "@/components/layout/logo-sidebar";
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +22,7 @@ import {
 
 import { api } from "@/trpc/react"; // Import your TRPC hooks
 import { useRouter } from "next/navigation";
-import { useChat } from "./chat-context";
+import { useChat } from "../provider/chat-context";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [search, setSearch] = React.useState("");

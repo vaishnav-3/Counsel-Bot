@@ -9,7 +9,7 @@ type Role = "assistant" | "user";
 export interface MessageBubbleProps {
   role: Role;
   content: string;
-  isLoading?: boolean; // ✅ new prop
+  isLoading?: boolean; // new prop
 }
 
 export function MessageBubble({ role, content, isLoading }: MessageBubbleProps) {
