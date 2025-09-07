@@ -65,17 +65,17 @@ export function LoginForm({
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="password">Password</Label>
-            <a
+            {/* <a
               href="#"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               Forgot your password?
-            </a>
+            </a> */}
           </div>
           <Input
             id="password"
             type="password"
-            value={password} // ✅ controlled input
+            value={password} 
             onChange={(e) => setPassword(e.target.value)}
             required
           />
@@ -92,6 +92,12 @@ export function LoginForm({
           Sign up
         </Link>
       </div>
+      <div className="text-center text-sm text-gray-400">
+        <p>Demo credentials</p>
+        <p>Email : vantom1103@gmail.com</p>
+        <p>Password : Pass@1234</p>
+      </div>
+      
     </form>
   );
 }

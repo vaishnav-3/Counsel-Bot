@@ -1,7 +1,6 @@
-
-import { LoginForm } from "@/components/signin-form"
-import Image from "next/image"
-import { BotMessageSquare } from 'lucide-react';
+import { LoginForm } from "@/app/auth/_components/signin-form";
+import Image from "next/image";
+import { BotMessageSquare } from "lucide-react";
 
 export default function LoginPage() {
   return (
@@ -30,5 +29,5 @@ export default function LoginPage() {
         />
       </div>
     </div>
-  )
+  );
 }
