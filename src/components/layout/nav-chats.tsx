@@ -11,7 +11,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { api } from "@/trpc/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation"; // ⬅️ import router
 import Link from "next/link";
 
 type Chat = {
@@ -31,15 +31,20 @@ export function NavChats({
   const { isMobile } = useSidebar();
   const utils = api.useUtils();
   const pathname = usePathname();
-
-  const deleteSession = api.session.deleteSession.useMutation({
-    onSuccess: () => {
-      utils.session.getSessions.invalidate();
-    },
-  });
+  const router = useRouter(); // ⬅️ add router
 
   // Extract current chatId from pathname (/chat/[id]) 
   const currentId = pathname?.match(/\/chat\/([^/]+)/)?.[1];
+
+  const deleteSession = api.session.deleteSession.useMutation({
+    onSuccess: (_, variables) => {
+      utils.session.getSessions.invalidate();
+
+      if (variables.sessionId === currentId) {
+        router.push("/chat");
+      }
+    },
+  });
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
