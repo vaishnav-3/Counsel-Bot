@@ -33,7 +33,7 @@ export function ChatView({ sessionId, initialMessages = [] }: ChatViewProps) {
     data: messagesData,
     isLoading: isLoadingMessages,
     error: messagesError,
-  } = api.chat.getMessages.useQuery({ sessionId }, { enabled: !!sessionId });
+  } = api.chat.getMessages.useQuery({ sessionId }, { enabled: !!sessionId, refetchOnWindowFocus: false, refetchOnReconnect: false });
 
   // Send message mutation
   const sendMessage = api.chat.sendMessage.useMutation({
