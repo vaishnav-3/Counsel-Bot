@@ -28,10 +28,11 @@ export function LoginForm({
       redirect: false, // we handle redirect manually
     });
 
-    if (result?.ok) {
-      router.push("/chat"); // ✅ redirect after login
+
+    if (result?.error) {
+      alert("Invalid credentials"); // failed login
     } else {
-      alert("Invalid credentials");
+      router.push("/chat"); // success
     }
 
     setIsLoading(false);
