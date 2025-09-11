@@ -21,26 +21,26 @@ export const chatRouter = createTRPCRouter({
       if (!userId) throw new Error("User not authenticated");
 
       try {
-        // 1️⃣ Save user message
+        //Save user message
         const [userMessage] = await ctx.db
           .insert(messages)
           .values({ sessionId, sender: "user", content: message })
           .returning();
 
-        // 2️⃣ Get AI response (returns { title, response })
+        //Get AI response (returns { title, response })
         const aiResponse = await getAIResponse(message, sessionId, ctx.db);
         
-        // 3️⃣ Save AI response content only (not the JSON)
+        //Save AI response content only (not the JSON)
         const [aiMessage] = await ctx.db
           .insert(messages)
           .values({ 
             sessionId, 
-            sender: "assistant", // Changed from "ai" to "assistant" to match your frontend
+            sender: "assistant", 
             content: aiResponse.response // Only save the markdown response
           })
           .returning();
 
-        // 4️⃣ Update session title if it's still the default
+        // Update session title if it's still the default
         const [session] = await ctx.db
           .select()
           .from(chatSessions)
@@ -121,54 +121,4 @@ export const chatRouter = createTRPCRouter({
       }
     }),
 
-  // Additional query to get recent messages with pagination
-  getRecentMessages: protectedProcedure
-    .input(
-      z.object({
-        sessionId: z.string().uuid("Invalid session ID format"),
-        limit: z.number().min(1).max(100).default(50),
-        offset: z.number().min(0).default(0),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { sessionId, limit, offset } = input;
-      const userId = ctx.session.user?.id;
-
-      if (!userId) {
-        throw new Error("User not authenticated");
-      }
-
-      try {
-        // Verify user owns this session
-        const session = await ctx.db
-          .select()
-          .from(chatSessions)
-          .where(and(
-            eq(chatSessions.id, sessionId),
-            eq(chatSessions.userId, userId)
-          ))
-          .limit(1);
-
-        if (!session.length) {
-          throw new Error("Session not found or access denied");
-        }
-
-        const sessionMessages = await ctx.db
-          .select()
-          .from(messages)
-          .where(eq(messages.sessionId, sessionId))
-          .orderBy(asc(messages.createdAt))
-          .limit(limit)
-          .offset(offset);
-
-        return {
-          messages: sessionMessages,
-          hasMore: sessionMessages.length === limit,
-          success: true,
-        };
-      } catch (error) {
-        console.error("Error in getRecentMessages:", error);
-        throw new Error("Failed to retrieve recent messages");
-      }
-    }),
 });

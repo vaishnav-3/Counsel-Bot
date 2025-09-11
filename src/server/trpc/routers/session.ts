@@ -101,49 +101,6 @@ export const sessionRouter = createTRPCRouter({
       }
     }),
 
-  updateSessionTitle: protectedProcedure
-    .input(
-      z.object({
-        sessionId: z.string().uuid("Invalid session ID format"),
-        title: z
-          .string()
-          .min(1, "Title cannot be empty")
-          .max(255, "Title too long"),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user?.id;
-
-      if (!userId) {
-        throw new Error("User not authenticated");
-      }
-
-      try {
-        const [updatedSession] = await ctx.db
-          .update(chatSessions)
-          .set({ title: input.title })
-          .where(
-            and(
-              eq(chatSessions.id, input.sessionId),
-              eq(chatSessions.userId, userId),
-              eq(chatSessions.title, "New Chat") 
-            )
-          )
-          .returning();
-
-        if (!updatedSession) {
-          throw new Error("Session not found or access denied");
-        }
-
-        return {
-          session: updatedSession,
-          success: true,
-        };
-      } catch (error) {
-        console.error("Error updating session title:", error);
-        throw new Error("Failed to update session title");
-      }
-    }),
 
   deleteSession: protectedProcedure
     .input(

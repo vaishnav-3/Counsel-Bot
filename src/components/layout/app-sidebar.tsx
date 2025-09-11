@@ -17,7 +17,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  useSidebar,
 } from "@/components/ui/sidebar";
 
 import { api } from "@/trpc/react"; // Import your TRPC hooks
@@ -26,7 +25,6 @@ import { useChat } from "../provider/chat-context";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [search, setSearch] = React.useState("");
-  const { setOpen } = useSidebar();
   const { setSelectedChatName } = useChat();
   const router = useRouter();
 
