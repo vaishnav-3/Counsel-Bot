@@ -1,6 +1,5 @@
 import { eq } from "drizzle-orm";
 import { GoogleGenAI, Type } from "@google/genai";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "@/db/schema";
 import { messages } from "@/db/schema";

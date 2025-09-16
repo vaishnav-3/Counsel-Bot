@@ -1,4 +1,4 @@
-import { api } from "@/trpc/react"
+
 import { signOut, useSession } from "next-auth/react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"

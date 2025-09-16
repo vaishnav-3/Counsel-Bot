@@ -6,6 +6,8 @@ import { ChatInput } from "@/components/chat/chat-input";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 type Role = "assistant" | "user";
 
@@ -23,7 +25,15 @@ interface ChatViewProps {
 
 export function ChatView({ sessionId, initialMessages = [] }: ChatViewProps) {
   const viewportRef = React.useRef<HTMLDivElement>(null);
+  const { status } = useSession();
+  const router = useRouter()
   const utils = api.useUtils();
+
+  React.useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/auth/signin");
+    }
+  }, [status, router]);
 
   // Pending messages not yet confirmed from backend
   const [pendingMessages, setPendingMessages] = React.useState<ChatMessage[]>([]);

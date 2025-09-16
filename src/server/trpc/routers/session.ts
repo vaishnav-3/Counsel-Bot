@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc} from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "..";
-import { chatSessions, users } from "@/db/schema";
+import { chatSessions } from "@/db/schema";
 
 export const sessionRouter = createTRPCRouter({
   getSessions: protectedProcedure.query(async ({ ctx }) => {

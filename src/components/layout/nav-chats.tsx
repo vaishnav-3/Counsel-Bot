@@ -8,10 +8,9 @@ import {
   SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { api } from "@/trpc/react";
-import { usePathname, useRouter } from "next/navigation"; // ⬅️ import router
+import { usePathname, useRouter } from "next/navigation"; // import router
 import Link from "next/link";
 
 type Chat = {
@@ -28,10 +27,9 @@ export function NavChats({
   isLoading?: boolean;
   onSelect?: (id: string) => void;
 }) {
-  const { isMobile } = useSidebar();
   const utils = api.useUtils();
   const pathname = usePathname();
-  const router = useRouter(); // ⬅️ add router
+  const router = useRouter(); //  add router
 
   // Extract current chatId from pathname (/chat/[id]) 
   const currentId = pathname?.match(/\/chat\/([^/]+)/)?.[1];
