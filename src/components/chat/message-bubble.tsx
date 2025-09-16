@@ -23,11 +23,13 @@ export function MessageBubble({ role, content, isLoading }: MessageBubbleProps) 
       )}
     >
       {!isUser && (
-        <Avatar className="size-7 shrink-0">
-          <AvatarFallback className="bg-muted text-foreground">
-            <Bot className="size-4" aria-hidden="true" />
+        <div className="pt-3">
+        <Avatar className="size-9 shrink-0 ">
+          <AvatarFallback className="bg-zinc-700 text-amber-50 dark:text-black dark:bg-stone-300">
+            <Bot className="size-4"/>
           </AvatarFallback>
         </Avatar>
+        </div>
       )}
 
       <div
@@ -35,8 +37,8 @@ export function MessageBubble({ role, content, isLoading }: MessageBubbleProps) 
           "prose prose-sm dark:prose-invert max-w-[min(80%,_48rem)] rounded-md px-4 py-3 text-[15px] leading-7",
           "prose-p:my-4 prose-li:my-2 prose-ul:my-4 prose-ol:my-4 prose-headings:my-5",
           isUser
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted text-foreground"
+            ? "bg-stone-200 text-black dark:bg-black dark:text-amber-50"
+            : " text-black dark:text-amber-50"
         )}
         role="group"
       >
@@ -51,9 +53,9 @@ export function MessageBubble({ role, content, isLoading }: MessageBubbleProps) 
       </div>
 
       {isUser && (
-        <Avatar className="size-7 shrink-0">
-          <AvatarFallback className="bg-muted text-foreground">
-            <UserIcon className="size-4" aria-hidden="true" />
+        <Avatar className="size-9 shrink-0">
+          <AvatarFallback className="bg-zinc-700 text-amber-50 dark:text-black dark:bg-stone-300">
+            <UserIcon className="size-4" />
           </AvatarFallback>
         </Avatar>
       )}

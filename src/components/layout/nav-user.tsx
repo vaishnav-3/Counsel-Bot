@@ -19,8 +19,8 @@ export function NavUser() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg">
-              <Avatar className="h-8 w-8 rounded-lg">
-                 <AvatarFallback>{email.charAt(0)}</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-lg ">
+                 <AvatarFallback className="bg-zinc-700 text-amber-50 dark:bg-stone-300 dark:text-black font-bold">{email.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{email}</span>

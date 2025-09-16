@@ -11,7 +11,7 @@ export default function LoginPage() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <BotMessageSquare className="size-5" />
             </div>
-            Counsel Bot
+            <p className="text-zinc-700 dark:text-white">Counsel Bot</p>
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
@@ -20,13 +20,15 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
-        <Image
-          src="/landing-page.svg"
-          alt="Image"
-          fill
-          className="absolute inset-0 h-full w-full object-cover bg-white"
-        />
+      <div className="relative hidden lg:block"
+      style={{ background: "oklch(0.9818 0.0054 95.0986)" }}
+        >
+          <Image
+            src="/landing-page.svg"
+            alt="Image"
+            fill
+            className="absolute inset-0 h-full w-full object-cover"
+          />
       </div>
     </div>
   );

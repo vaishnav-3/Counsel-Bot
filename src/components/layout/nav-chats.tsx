@@ -74,8 +74,8 @@ export function NavChats({
                   onClick={onSelect ? () => onSelect(chat.id) : undefined}
                   className={`flex items-center gap-2 ${
                     isActive
-                      ? "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-medium hover:bg-gray-200 dark:hover:bg-gray-700"
-                      : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                      ? "bg-stone-200 dark:bg-black text-gray-900 dark:text-white font-medium hover:bg-stone-200 "
+                      : "hover:bg-stone-200 dark:hover:bg-black"
                   }`}
                 >
                   <Link href={`/chat/${chat.id}`}>

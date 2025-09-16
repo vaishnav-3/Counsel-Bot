@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/components/provider/SessionProvider";
 import { TRPCProvider } from "@/trpc/provider";
 import { ThemeProvider } from "@/components/provider/ThemeProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const rubik = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "AI Career Counselor",
@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={rubik.className}>
         <SessionProvider>
           <ThemeProvider>
             <TRPCProvider>{children}</TRPCProvider>

@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
+
 import { usePathname } from "next/navigation";
 import { api } from "@/trpc/react";
 
@@ -16,14 +11,8 @@ export function HeaderBreadcrumb() {
   const current = sessions?.sessions.find(s => s.id === currentId);
 
   return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbPage>
+    <div className="font-bold">
             {current?.title || "New chat"}
-          </BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
+    </div>
   );
 }
