@@ -1,3 +1,5 @@
+import typography from "@tailwindcss/typography";
+
 const config = {
     darkMode: 'class', // enables class-based dark mode
     content: [
@@ -7,7 +9,7 @@ const config = {
     theme: {
       extend: {},
     },
-    plugins: [],
+    plugins: [typography],
   }
 
   export default config;

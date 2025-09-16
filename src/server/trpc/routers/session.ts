@@ -67,95 +67,96 @@ export const sessionRouter = createTRPCRouter({
         throw new Error("Failed to create chat session");
       }
     }),
-
-  getSession: protectedProcedure
-    .input(
-      z.object({
-        sessionId: z.string().uuid("Invalid session ID format"),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const userId = ctx.session.user?.id;
-
-      if (!userId) {
-        throw new Error("User not authenticated");
-      }
-
-      try {
-        const [session] = await ctx.db
-          .select()
-          .from(chatSessions)
-          .where(eq(chatSessions.id, input.sessionId));
-
-        if (!session || session.userId !== userId) {
-          throw new Error("Session not found or access denied");
+    
+    deleteSession: protectedProcedure
+      .input(
+        z.object({
+          sessionId: z.string().uuid(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const userId = ctx.session.user?.id;
+        if (!userId) {
+          throw new Error("User not authenticated");
         }
-
-        return {
-          session,
-          success: true,
-        };
-      } catch (error) {
-        console.error("Error fetching session:", error);
-        throw new Error("Failed to fetch chat session");
-      }
-    }),
-
-
-  deleteSession: protectedProcedure
-    .input(
-      z.object({
-        sessionId: z.string().uuid(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user?.id;
-      if (!userId) {
-        throw new Error("User not authenticated");
-      }
-
-      try {
-        // First, check ownership
-        const [session] = await ctx.db
-          .select()
-          .from(chatSessions)
-          .where(eq(chatSessions.id, input.sessionId));
-
-        if (!session || session.userId !== userId) {
-          throw new Error("Session not found or access denied");
+  
+        try {
+          // First, check ownership
+          const [session] = await ctx.db
+            .select()
+            .from(chatSessions)
+            .where(eq(chatSessions.id, input.sessionId));
+  
+          if (!session || session.userId !== userId) {
+            throw new Error("Session not found or access denied");
+          }
+  
+          // Delete session (messages will be cascaded)
+          await ctx.db
+            .delete(chatSessions)
+            .where(eq(chatSessions.id, input.sessionId));
+  
+          return { success: true };
+        } catch (error) {
+          console.error("Error deleting session:", error);
+          throw new Error("Failed to delete chat session");
         }
+      }),
+    
+  // getSession: protectedProcedure
+  //   .input(
+  //     z.object({
+  //       sessionId: z.string().uuid("Invalid session ID format"),
+  //     })
+  //   )
+  //   .query(async ({ ctx, input }) => {
+  //     const userId = ctx.session.user?.id;
 
-        // Delete session (messages will be cascaded)
-        await ctx.db
-          .delete(chatSessions)
-          .where(eq(chatSessions.id, input.sessionId));
+  //     if (!userId) {
+  //       throw new Error("User not authenticated");
+  //     }
 
-        return { success: true };
-      } catch (error) {
-        console.error("Error deleting session:", error);
-        throw new Error("Failed to delete chat session");
-      }
-    }),
+  //     try {
+  //       const [session] = await ctx.db
+  //         .select()
+  //         .from(chatSessions)
+  //         .where(eq(chatSessions.id, input.sessionId));
+
+  //       if (!session || session.userId !== userId) {
+  //         throw new Error("Session not found or access denied");
+  //       }
+
+  //       return {
+  //         session,
+  //         success: true,
+  //       };
+  //     } catch (error) {
+  //       console.error("Error fetching session:", error);
+  //       throw new Error("Failed to fetch chat session");
+  //     }
+  //   }),
+
+
 
 
     //for userdata
-    getUser: protectedProcedure.query(async ({ ctx }) => {
-      const userId = ctx.session.user?.id;
+    // getUser: protectedProcedure.query(async ({ ctx }) => {
+    //   const userId = ctx.session.user?.id;
   
-      if (!userId) throw new Error("User not authenticated");
+    //   if (!userId) throw new Error("User not authenticated");
   
-      // Fetch user info from DB
-      const [user] = await ctx.db
-        .select({
-          id: users.id,
-          email: users.email,
-        })
-        .from(users)
-        .where(eq(users.id, userId));
+    //   // Fetch user info from DB
+    //   const [user] = await ctx.db
+    //     .select({
+    //       id: users.id,
+    //       email: users.email,
+    //     })
+    //     .from(users)
+    //     .where(eq(users.id, userId));
   
-      if (!user) throw new Error("User not found");
+    //   if (!user) throw new Error("User not found");
   
-      return { user, success: true };
-    }),
+    //   return { user, success: true };
+    // }),
     
 });

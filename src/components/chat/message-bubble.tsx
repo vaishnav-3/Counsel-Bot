@@ -9,49 +9,87 @@ type Role = "assistant" | "user";
 export interface MessageBubbleProps {
   role: Role;
   content: string;
-  isLoading?: boolean; // new prop
+  isLoading?: boolean;
 }
 
 export function MessageBubble({ role, content, isLoading }: MessageBubbleProps) {
   const isUser = role === "user";
-
   return (
     <div
       className={cn(
-        "flex w-full items-start gap-3",
+        "flex w-full items-start gap-3 my-2",
         isUser ? "justify-end" : "justify-start"
       )}
     >
+      {/* Avatar for Assistant */}
       {!isUser && (
-        <div className="pt-3">
-        <Avatar className="size-9 shrink-0 ">
+        <Avatar className="size-9 shrink-0">
           <AvatarFallback className="bg-zinc-700 text-amber-50 dark:text-black dark:bg-stone-300">
-            <Bot className="size-4"/>
+            <Bot className="size-4" />
           </AvatarFallback>
         </Avatar>
-        </div>
       )}
 
+      {/* Message Bubble */}
       <div
         className={cn(
-          "prose prose-sm dark:prose-invert max-w-[min(80%,_48rem)] rounded-md px-4 py-3 text-[15px] leading-7",
-          "prose-p:my-4 prose-li:my-2 prose-ul:my-4 prose-ol:my-4 prose-headings:my-5",
+          "max-w-[min(80%,_48rem)] rounded-2xl px-4 py-3 text-[15px] leading-relaxed shadow-sm",
           isUser
-            ? "bg-stone-200 text-black dark:bg-black dark:text-amber-50"
-            : " text-black dark:text-amber-50"
+            ? "bg-stone-200 text-black dark:bg-black dark:text-amber-50 border border-stone-300 dark:border-stone-700"
+            : "bg-zinc-100 text-black dark:bg-zinc-800 dark:text-amber-50 border border-zinc-300 dark:border-zinc-700"
         )}
-        role="group"
       >
         {isLoading ? (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            AI is thinking...
+            <span>AI is thinking...</span>
           </div>
         ) : (
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+          <div className="prose prose-sm dark:prose-invert max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}
+              components={{
+                h1: ({node, ...props}) => (
+                  <h1 className="text-3xl font-bold my-4 text-black dark:text-amber-50" {...props} />
+                ),
+                h2: ({node, ...props}) => (
+                  <h2 className="text-2xl font-semibold my-3 text-black dark:text-amber-50" {...props} />
+                ),
+                h3: ({node, ...props}) => (
+                  <h3 className="text-xl font-semibold my-2 text-black dark:text-amber-50" {...props} />
+                ),
+                p: ({node, ...props}) => (
+                  <p className="mb-3 text-[15px] leading-relaxed text-black dark:text-amber-50" {...props} />
+                ),
+                ul: ({node, ...props}) => (
+                  <ul className="ml-5 list-disc mb-3 text-black dark:text-amber-50" {...props} />
+                ),
+                ol: ({node, ...props}) => (
+                  <ol className="ml-5 list-decimal mb-3 text-black dark:text-amber-50" {...props} />
+                ),
+                li: ({node, ...props}) => (
+                  <li className="mb-1" {...props} />
+                ),
+                strong: ({node, ...props}) => (
+                  <strong className="font-semibold text-black dark:text-amber-50" {...props} />
+                ),
+                em: ({node, ...props}) => (
+                  <em className="italic text-black dark:text-amber-50" {...props} />
+                ),
+                blockquote: ({node, ...props}) => (
+                  <blockquote className="border-l-2 border-gray-300 dark:border-gray-600 pl-4 italic my-3 text-gray-700 dark:text-gray-300" {...props} />
+                ),
+                a: ({node, ...props}) => (
+                  <a className="text-blue-600 dark:text-blue-400 underline" {...props} />
+                ),
+              }}
+            >
+            {content}
+          </ReactMarkdown>
+          </div>
         )}
       </div>
 
+      {/* Avatar for User */}
       {isUser && (
         <Avatar className="size-9 shrink-0">
           <AvatarFallback className="bg-zinc-700 text-amber-50 dark:text-black dark:bg-stone-300">

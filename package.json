@@ -13,6 +13,7 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@google/genai": "^1.19.0",
     "@google/generative-ai": "^0.24.1",
     "@neondatabase/serverless": "^1.0.1",
     "@radix-ui/react-avatar": "^1.1.10",
@@ -24,6 +25,7 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-query": "^5.85.8",
     "@tanstack/react-query-devtools": "^5.86.0",
     "@trpc/client": "^11.5.0",
@@ -36,6 +38,7 @@
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.5",
     "lucide-react": "^0.542.0",
+    "markdown-to-jsx": "^7.7.13",
     "next": "15.5.2",
     "next-auth": "^4.24.11",
     "pg": "^8.16.3",

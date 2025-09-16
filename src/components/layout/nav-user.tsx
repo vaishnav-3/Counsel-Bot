@@ -1,17 +1,18 @@
 import { api } from "@/trpc/react"
-import { signOut } from "next-auth/react"
+import { signOut, useSession } from "next-auth/react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { ChevronsUpDown, LogOut } from "lucide-react"
 
 export function NavUser() {
-  const { data } = api.session.getUser.useQuery()
+  const { data: session } = useSession()
+
   const { isMobile } = useSidebar()
 
-  if (!data?.user) return null
+  if (!session?.user) return null
 
-  const { email } = data.user
+  const { email } = session.user
 
   return (
     <SidebarMenu>
@@ -20,7 +21,7 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton size="lg">
               <Avatar className="h-8 w-8 rounded-lg ">
-                 <AvatarFallback className="bg-zinc-700 text-amber-50 dark:bg-stone-300 dark:text-black font-bold">{email.charAt(0)}</AvatarFallback>
+                 <AvatarFallback className="bg-zinc-700 text-amber-50 dark:bg-stone-300 dark:text-black font-bold">{email?.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{email}</span>

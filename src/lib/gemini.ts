@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-
+import { GoogleGenAI, Type } from "@google/genai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "@/db/schema";
@@ -24,84 +24,101 @@ interface AIResponse {
 /**
  * Safely parse AI response into { title, response }
  */
-function parseAIResponse(text: string): AIResponse {
-  try {
-    const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/) || text.match(/\{[\s\S]*\}/);
-    const parsed = JSON.parse(jsonMatch ? jsonMatch[1] || jsonMatch[0] : text);
+// function parseAIResponse(text: string): AIResponse {
+//   try {
+//     const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/) || text.match(/\{[\s\S]*\}/);
+//     const parsed = JSON.parse(jsonMatch ? jsonMatch[1] || jsonMatch[0] : text);
 
-    if (typeof parsed.title === "string" && typeof parsed.response === "string") {
-      return { title: parsed.title.trim(), response: parsed.response.trim() };
-    }
-    throw new Error("Invalid JSON structure");
-  } catch {
-    // Fallback title extraction
-    const firstLine = text.split("\n")[0] || "";
-    const title = firstLine.replace(/^#\s*/, "").slice(0, 60) || "Career Discussion";
-    return { title, response: text.trim() };
-  }
-}
+//     if (typeof parsed.title === "string" && typeof parsed.response === "string") {
+//       return { title: parsed.title.trim(), response: parsed.response.trim() };
+//     }
+//     throw new Error("Invalid JSON structure");
+//   } catch {
+//     // Fallback title extraction
+//     const firstLine = text.split("\n")[0] || "";
+//     const title = firstLine.replace(/^#\s*/, "").slice(0, 60) || "Career Discussion";
+//     return { title, response: text.trim() };
+//   }
+// }
 
 /**
  * Call Gemini API for career counseling using Google GenAI library
  */
 export async function getCareerCounselingAnswer(
   message: string,
-  sessionHistory: ChatMessage[] = []
+  sessionHistory: { role: "user" | "assistant"; content: string }[] = []
 ): Promise<AIResponse> {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY environment variable is not set");
+  if (!apiKey) throw new Error("GEMINI_API_KEY is missing");
 
-  // Initialize the Google Generative AI client
-  const genAI = new GoogleGenerativeAI(apiKey);
-  
-  // Get the model
-  const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash",
-    generationConfig: {
-      temperature: 0.7,
-      maxOutputTokens: 2048,
-    }
+  const ai = new GoogleGenAI({ apiKey });
+
+  const config = {
+    thinkingConfig: {
+      thinkingBudget: -1, // optional
+    },
+    responseMimeType: "application/json",
+    responseSchema: {
+      type: Type.OBJECT,
+      required: ["title", "response"],
+      properties: {
+        title: { type: Type.STRING },
+        response: { type: Type.STRING },
+      },
+    },
+    systemInstruction: [
+      {
+        text: `
+        You are a professional Career Counselor.
+    
+        Your ONLY allowed output is STRICT JSON.
+        Never include explanations, comments, or Markdown fences outside the JSON.
+    
+        The JSON must have exactly these fields:
+        {
+          "title": "A concise title (max 60 characters, no line breaks, no quotes inside)",
+          "response": "A detailed answer in valid Markdown format."
+        }
+    
+        Formatting rules for "response":
+        - Use Markdown headings (##, ###) for structure.
+        - Use bullet points (-) and numbered lists (1., 2.) for readability.
+        - Use **bold** for important terms.
+        - Keep paragraphs short (2–3 sentences).
+        - Ensure spacing between sections for clarity.
+    
+        General rules:
+        - Always output valid JSON (no trailing commas, properly escaped quotes).
+        - "title" must be short, descriptive, and plain text (no Markdown).
+        - "response" should be well-structured Markdown that renders cleanly in a chat UI.
+        `,
+      },
+    ],
+    
+  };
+
+  const contents = [
+    ...sessionHistory.map((msg) => ({
+      role: msg.role === "assistant" ? "model" : "user",
+      parts: [{ text: msg.content }],
+    })),
+    {
+      role: "user",
+      parts: [{ text: message }],
+    },
+  ];
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    config,
+    contents,
   });
 
-  const systemPrompt = `
-You are a professional Career Counselor.
-
-Respond ONLY with valid JSON:
-{
-  "title": "Brief descriptive title (max 60 chars)",
-  "response": "Detailed markdown advice"
-}`;
-
-  try {
-    // Start a chat session with history
-    const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: systemPrompt }],
-        },
-        // Convert session history to Gemini format
-        ...sessionHistory.map((msg) => ({
-          role: msg.role === "assistant" ? "model" : "user",
-          parts: [{ text: msg.content }],
-        })),
-      ],
-    });
-
-    // Send the current message
-    const result = await chat.sendMessage(message);
-    const response = await result.response;
-    const aiText = response.text();
-
-    if (!aiText) {
-      throw new Error("Empty response from Gemini API");
-    }
-
-    return parseAIResponse(aiText);
-  } catch (error) {
-    console.error("Gemini API error:", error);
-    throw new Error(`Failed to get response from Gemini: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  // response.outputText() is guaranteed JSON thanks to responseSchema
+  if (!response.text) {
+    throw new Error("Empty response from Gemini");
   }
+  return JSON.parse(response.text) as AIResponse;
 }
 
 /**

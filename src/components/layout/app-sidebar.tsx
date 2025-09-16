@@ -33,7 +33,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     data: sessions,
     isLoading,
     refetch,
-  } = api.session.getSessions.useQuery();
+  } = api.session.getSessions.useQuery(undefined, {refetchOnWindowFocus: false});
 
   // Mutation for creating new session
   const createSession = api.session.createSession.useMutation({
